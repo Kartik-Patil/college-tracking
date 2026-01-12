@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboard;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\CR\DashboardController as CRDashboard;
-
+use App\Http\Controllers\Admin\DocumentApprovalController;
 /*
 |--------------------------------------------------------------------------
 | Authentication
@@ -40,6 +40,16 @@ Route::middleware(['auth','role:1'])->get('/admin/dashboard',[AdminDashboard::cl
 Route::middleware(['auth','role:2'])->get('/teacher/dashboard',[TeacherDashboard::class,'index'])->name('teacher.dashboard');
 Route::middleware(['auth','role:3'])->get('/student/dashboard',[StudentDashboard::class,'index'])->name('student.dashboard');
 Route::middleware(['auth','role:4'])->get('/cr/dashboard',[CRDashboard::class,'index'])->name('cr.dashboard');
+
+
+
+Route::middleware(['auth','role:1'])->group(function () {
+    Route::get('/admin/documents', [DocumentApprovalController::class, 'index'])
+        ->name('admin.documents');
+
+    Route::get('/admin/documents/{id}/approve', [DocumentApprovalController::class, 'approve'])
+        ->name('admin.document.approve');
+});
 
 Route::middleware(['auth','role:2'])->group(function () {
     Route::get('/teacher/dashboard', [TeacherDashboard::class, 'index'])
