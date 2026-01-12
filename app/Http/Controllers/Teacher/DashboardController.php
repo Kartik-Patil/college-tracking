@@ -18,16 +18,24 @@ class DashboardController extends Controller
             ->join('subjects as s', 's.subject_id', '=', 'tsm.subject_id')
             ->join('classes as c', 'c.class_id', '=', 'tsm.class_id')
             ->join('semesters as sem', 'sem.semester_id', '=', 'c.semester_id')
+            ->where('tsm.teacher_id', $teacherId)
             ->select(
                 'tsm.mapping_id',
+                's.subject_id',
                 's.subject_name',
-                'c.section',
-                'sem.semester_number',
                 'c.class_id',
-                's.subject_id'
+                'c.section',
+                'sem.semester_number'
             )
-            ->where('tsm.teacher_id', $teacherId)
             ->get();
+
+        foreach ($assignments as $a) {
+            $a->students = DB::table('class_student_mapping as csm')
+                ->join('students as st', 'st.student_id', '=', 'csm.student_id')
+                ->where('csm.class_id', $a->class_id)
+                ->select('st.student_id')
+                ->get();
+        }
 
         return view('teacher.dashboard', compact('assignments'));
     }
@@ -62,16 +70,5 @@ class DashboardController extends Controller
         }
 
         return back()->with('success', 'Marks saved');
-    }
-
-    public function completeChapter(Request $request)
-    {
-        DB::table('chapters')
-            ->where('chapter_id', $request->chapter_id)
-            ->update([
-                'teacher_status' => 'COMPLETED'
-            ]);
-
-        return back()->with('success', 'Chapter marked completed');
     }
 }

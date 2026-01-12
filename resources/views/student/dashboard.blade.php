@@ -61,6 +61,10 @@
         @endforeach
     </tbody>
 </table>
+<a href="{{ route('student.markscard.pdf') }}"
+   class="bg-blue-600 text-white px-4 py-2 rounded inline-block mb-6">
+   Download Markscard (PDF)
+</a>
 
 </body>
 </html>

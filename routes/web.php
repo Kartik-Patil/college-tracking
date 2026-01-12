@@ -65,3 +65,11 @@ Route::middleware(['auth','role:3'])->get(
     '/student/dashboard',
     [StudentDashboard::class, 'index']
 )->name('student.dashboard');
+
+
+use App\Http\Controllers\Student\DocumentController;
+
+Route::middleware(['auth','role:3'])->get(
+    '/student/markscard/pdf',
+    [DocumentController::class,'generateMarkscard']
+)->name('student.markscard.pdf');

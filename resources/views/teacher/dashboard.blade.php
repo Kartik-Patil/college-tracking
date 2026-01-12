@@ -4,7 +4,7 @@
     <title>Teacher Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-6 bg-gray-100">
+<body class="bg-gray-100 p-6">
 
 <h1 class="text-3xl font-bold mb-6">Teacher Dashboard</h1>
 
@@ -16,6 +16,7 @@
 
 @foreach($assignments as $a)
 <div class="bg-white p-4 rounded shadow mb-6">
+
     <h2 class="text-xl font-semibold">
         {{ $a->subject_name }} — Sem {{ $a->semester_number }} ({{ $a->section }})
     </h2>
@@ -24,7 +25,7 @@
     <form method="POST" action="{{ route('teacher.attendance') }}">
         @csrf
         <input type="hidden" name="subject_id" value="{{ $a->subject_id }}">
-        <input type="date" name="date" required class="border p-1">
+        <input type="date" name="date" required class="border p-1 mt-2">
 
         <table class="w-full mt-4 border">
             <tr class="bg-gray-200">
@@ -32,14 +33,7 @@
                 <th class="border p-2">Status</th>
             </tr>
 
-            @php
-                $students = DB::table('class_student_mapping as csm')
-                    ->join('students as s', 's.student_id', '=', 'csm.student_id')
-                    ->where('csm.class_id', $a->class_id)
-                    ->get();
-            @endphp
-
-            @foreach($students as $st)
+            @foreach($a->students as $st)
             <tr>
                 <td class="border p-2">{{ $st->student_id }}</td>
                 <td class="border p-2">
@@ -74,11 +68,11 @@
                 <th class="border p-2">Marks</th>
             </tr>
 
-            @foreach($students as $st)
+            @foreach($a->students as $st)
             <tr>
                 <td class="border p-2">{{ $st->student_id }}</td>
                 <td class="border p-2">
-                    <input type="number" name="marks[{{ $st->student_id }}]" class="border w-full" max="50">
+                    <input type="number" name="marks[{{ $st->student_id }}]" max="50" class="border w-full">
                 </td>
             </tr>
             @endforeach
