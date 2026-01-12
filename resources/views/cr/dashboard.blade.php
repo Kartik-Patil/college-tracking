@@ -58,4 +58,13 @@
 </table>
 
 </body>
+<div class="flex justify-end mb-4">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button class="bg-red-600 text-white px-4 py-2 rounded">
+            Logout
+        </button>
+    </form>
+</div>
+
 </html>

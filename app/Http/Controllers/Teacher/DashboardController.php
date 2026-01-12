@@ -10,10 +10,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Get teacher_id
         $teacherId = DB::table('teachers')
             ->where('user_id', auth()->id())
             ->value('teacher_id');
 
+        // Teacher assignments
         $assignments = DB::table('teacher_subject_mapping as tsm')
             ->join('subjects as s', 's.subject_id', '=', 'tsm.subject_id')
             ->join('classes as c', 'c.class_id', '=', 'tsm.class_id')
@@ -29,11 +31,17 @@ class DashboardController extends Controller
             )
             ->get();
 
+        // Fetch students WITH USN
         foreach ($assignments as $a) {
             $a->students = DB::table('class_student_mapping as csm')
                 ->join('students as st', 'st.student_id', '=', 'csm.student_id')
+                ->join('users as u', 'u.user_id', '=', 'st.user_id')
                 ->where('csm.class_id', $a->class_id)
-                ->select('st.student_id')
+                ->select(
+                    'st.student_id',
+                    'u.usn'
+                )
+                ->orderBy('u.usn')
                 ->get();
         }
 
