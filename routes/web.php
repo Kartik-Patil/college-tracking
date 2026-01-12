@@ -21,39 +21,47 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | Dashboard Resolver
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function () {
-    $role = auth()->user()->role_id;
-
-    return match ($role) {
+Route::middleware('auth')->get('/dashboard', function () {
+    return match (auth()->user()->role_id) {
         1 => redirect()->route('admin.dashboard'),
         2 => redirect()->route('teacher.dashboard'),
         3 => redirect()->route('student.dashboard'),
         4 => redirect()->route('cr.dashboard'),
         default => abort(403),
     };
-})->middleware('auth')->name('dashboard');
+})->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
-| Role Based Dashboards
+| Role Dashboards
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth','role:1'])->get(
-    '/admin/dashboard',
-    [AdminDashboard::class, 'index']
-)->name('admin.dashboard');
+Route::middleware(['auth','role:1'])->get('/admin/dashboard',[AdminDashboard::class,'index'])->name('admin.dashboard');
+Route::middleware(['auth','role:2'])->get('/teacher/dashboard',[TeacherDashboard::class,'index'])->name('teacher.dashboard');
+Route::middleware(['auth','role:3'])->get('/student/dashboard',[StudentDashboard::class,'index'])->name('student.dashboard');
+Route::middleware(['auth','role:4'])->get('/cr/dashboard',[CRDashboard::class,'index'])->name('cr.dashboard');
 
-Route::middleware(['auth','role:2'])->get(
-    '/teacher/dashboard',
-    [TeacherDashboard::class, 'index']
-)->name('teacher.dashboard');
+Route::middleware(['auth','role:2'])->group(function () {
+    Route::get('/teacher/dashboard', [TeacherDashboard::class, 'index'])
+        ->name('teacher.dashboard');
+
+    Route::post('/teacher/attendance', [TeacherDashboard::class, 'markAttendance'])
+        ->name('teacher.attendance');
+
+    Route::post('/teacher/marks', [TeacherDashboard::class, 'saveMarks'])
+        ->name('teacher.marks');
+});
+
+Route::middleware(['auth','role:4'])->group(function () {
+    Route::get('/cr/dashboard', [CRDashboard::class, 'index'])
+        ->name('cr.dashboard');
+
+    Route::post('/cr/confirm', [CRDashboard::class, 'confirmChapter'])
+        ->name('cr.confirm');
+});
+
 
 Route::middleware(['auth','role:3'])->get(
     '/student/dashboard',
     [StudentDashboard::class, 'index']
 )->name('student.dashboard');
-
-Route::middleware(['auth','role:4'])->get(
-    '/cr/dashboard',
-    [CRDashboard::class, 'index']
-)->name('cr.dashboard');
