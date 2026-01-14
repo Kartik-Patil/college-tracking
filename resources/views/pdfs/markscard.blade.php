@@ -36,6 +36,11 @@
 
 <p style="margin-top:40px;">
 <b>Controller of Examinations</b><br>
+
+</p>
+
+<p style="margin-top:10px;">
+<b>This is a system-generated document and does not require signature.</b><br>
 Global Business School
 </p>
 

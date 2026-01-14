@@ -8,35 +8,43 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Get teacher_id
         $teacherId = DB::table('teachers')
             ->where('user_id', auth()->id())
             ->value('teacher_id');
 
-        // Teacher assignments
-        $assignments = DB::table('teacher_subject_mapping as tsm')
+        /* ---------------------------
+           FILTER DATA
+        ----------------------------*/
+        $filters = DB::table('teacher_subject_mapping as tsm')
             ->join('subjects as s', 's.subject_id', '=', 'tsm.subject_id')
             ->join('classes as c', 'c.class_id', '=', 'tsm.class_id')
             ->join('semesters as sem', 'sem.semester_id', '=', 'c.semester_id')
             ->where('tsm.teacher_id', $teacherId)
             ->select(
-                'tsm.mapping_id',
-                's.subject_id',
-                's.subject_name',
                 'c.class_id',
                 'c.section',
-                'sem.semester_number'
+                'sem.semester_number',
+                's.subject_id',
+                's.subject_name'
             )
+            ->orderBy('sem.semester_number')
             ->get();
 
-        // Fetch students WITH USN
-        foreach ($assignments as $a) {
-            $a->students = DB::table('class_student_mapping as csm')
+        /* ---------------------------
+           SELECTED FILTER
+        ----------------------------*/
+        $selectedClass   = $request->class_id;
+        $selectedSubject = $request->subject_id;
+
+        $students = [];
+
+        if ($selectedClass && $selectedSubject) {
+            $students = DB::table('class_student_mapping as csm')
                 ->join('students as st', 'st.student_id', '=', 'csm.student_id')
                 ->join('users as u', 'u.user_id', '=', 'st.user_id')
-                ->where('csm.class_id', $a->class_id)
+                ->where('csm.class_id', $selectedClass)
                 ->select(
                     'st.student_id',
                     'u.usn'
@@ -45,7 +53,12 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        return view('teacher.dashboard', compact('assignments'));
+        return view('teacher.dashboard', compact(
+            'filters',
+            'students',
+            'selectedClass',
+            'selectedSubject'
+        ));
     }
 
     public function markAttendance(Request $request)
