@@ -8,6 +8,18 @@
 <body class="bg-gray-100 p-6">
 
     <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <a href="{{ route('admin.faculty.assignments') }}"
+   class="bg-indigo-600 text-white px-4 py-2 rounded mb-6 inline-block">
+   View Faculty Assignments
+</a>
+
+<a href="{{ route('admin.assign.faculty.form') }}"
+
+   class="bg-purple-600 text-white px-4 py-2 rounded inline-block mb-4">
+   Assign Faculty
+</a>
+
+
 
     <!-- SUMMARY CARDS -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
