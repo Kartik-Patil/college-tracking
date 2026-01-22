@@ -53,6 +53,17 @@ Route::post('/student-search',
 Route::get('/search-usn',
     [AdminDashboard::class, 'searchUSN']
 )->name('admin.usn.search');
+Route::get('/section-wise-students',
+    [AdminDashboard::class, 'sectionWiseForm']
+)->name('admin.section.students');
+
+Route::get('/section-wise-students/list',
+    [AdminDashboard::class, 'sectionWiseList']
+)->name('admin.section.students.list');
+
+Route::get('/student-info/{usn}',
+    [AdminDashboard::class, 'getStudentInfo']
+)->name('admin.student.info');
 
 
 

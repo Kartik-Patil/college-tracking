@@ -54,6 +54,7 @@ class DashboardController extends Controller
             'crSummary',
             'recentCR'
         ));
+        
     }
 
     /**
@@ -327,5 +328,55 @@ public function searchUSN(Request $request)
         ->pluck('usn');
 }
 
+public function sectionWiseForm()
+{
+    $courses = DB::table('courses')
+        ->select('course_id', 'course_name')
+        ->get();
+
+    return view('admin.section_students', compact('courses'));
+}
+public function sectionWiseList(Request $request)
+{
+    return DB::table('class_student_mapping as csm')
+        ->join('students as st', 'st.student_id', '=', 'csm.student_id')
+        ->join('users as u', 'u.user_id', '=', 'st.user_id')
+        ->join('classes as c', 'c.class_id', '=', 'csm.class_id')
+        ->join('semesters as sem', 'sem.semester_id', '=', 'c.semester_id')
+        ->where('c.course_id', $request->course_id)
+        ->where('c.semester_id', $request->semester_id)
+        ->where('c.section', $request->section)
+        ->select(
+            'st.student_id',
+            'u.usn',
+            'u.first_name',
+            'u.last_name'
+        )
+        ->orderBy('u.usn')
+        ->get();
+}
+public function getStudentInfo($usn)
+{
+    $student = DB::table('users as u')
+        ->join('students as st', 'st.user_id', '=', 'u.user_id')
+        ->leftJoin('class_student_mapping as csm', 'csm.student_id', '=', 'st.student_id')
+        ->leftJoin('classes as c', 'c.class_id', '=', 'csm.class_id')
+        ->leftJoin('semesters as sem', 'sem.semester_id', '=', 'c.semester_id')
+        ->leftJoin('courses as co', 'co.course_id', '=', 'c.course_id')
+        ->where('u.usn', $usn)
+        ->select(
+            'u.usn',
+            'u.first_name',
+            'u.last_name',
+            'u.dob',
+            'co.course_name',
+            'sem.semester_number',
+            'c.section',
+            'c.academic_year'
+        )
+        ->first();
+
+    return response()->json($student);
+}
 
 }
