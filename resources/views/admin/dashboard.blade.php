@@ -19,6 +19,13 @@
    Assign Faculty
 </a>
 
+    <a href="{{ route('admin.student.search.form') }}"
+   class="bg-green-600 text-white px-4 py-2 rounded mb-4 inline-block">
+   Search Student (USN)
+</a>
+
+
+
 
 
     <!-- SUMMARY CARDS -->

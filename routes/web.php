@@ -30,6 +30,33 @@ Route::middleware(['auth','role:1'])
     ->prefix('admin')
     ->group(function () {
 
+    Route::get('/student-search', 
+    [AdminDashboard::class, 'studentSearchForm']
+)->name('admin.student.search.form');
+
+Route::get('/student/{id}/edit',
+    [AdminDashboard::class, 'editStudent']
+)->name('admin.student.edit');
+
+Route::post('/student/{id}/update',
+    [AdminDashboard::class, 'updateStudent']
+)->name('admin.student.update');
+
+Route::post('/student/{id}/toggle',
+    [AdminDashboard::class, 'toggleStudent']
+)->name('admin.student.toggle');
+
+
+Route::post('/student-search',
+    [AdminDashboard::class, 'studentSearchResult']
+)->name('admin.student.search.result');
+Route::get('/search-usn',
+    [AdminDashboard::class, 'searchUSN']
+)->name('admin.usn.search');
+
+
+
+
     Route::get('/dashboard',
         [AdminDashboard::class,'index']
     )->name('admin.dashboard');
